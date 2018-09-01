@@ -1,5 +1,6 @@
 //json-server --watch db.json
 
+/*
 let  users = [];
 let userNames = [];
 let companiesList = [];
@@ -70,8 +71,59 @@ fetch(`http://localhost:3000/users`)
             cell1.innerText = companiesList[counter];
         }
     });
+*/    //Solution #1
 
 
 
+// Solution #2 --->  FILTER + MAP
+
+async function init() {
+    let users = await getUsers();
+    let companies = await getCompanies();
+    var table = document.getElementById("myTable");
+
+    for(let counter = 0; counter < companies.length; counter++) {
+
+        var row = table.insertRow(counter + 1);              // Create the table and write values inside
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+
+        cell1.innerText = companies.filter(function (entry) {           //filter finds Users
+            return entry.uri === `/companies/${counter}`
+        }).map(a => a.name);                                            //map takes only the names
+        cell2.innerText = users.filter(function (entry) {
+            return entry.uris.company === `/companies/${counter}`
+        }).map(a => a.name);
+    }
+}
+
+async function getUsers() {
+    let users;
+
+    const data = fetch(`http://localhost:3000/users`).then(
+        res => res.json()
+    );
+
+    await data.then(
+        res => users = res
+    );
+
+    return users;
+}
+
+async function getCompanies() {
+    let companies;
+
+    const data = fetch(`http://localhost:3000/companies`).then(
+        res => res.json()
+    );
+
+    await data.then(
+        res => companies = res
+    );
+
+    return companies;
+}
+init();
 
 
